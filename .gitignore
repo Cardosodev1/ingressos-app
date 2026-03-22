@@ -1,0 +1,32 @@
+# Java / Maven
+target/
+*.jar
+*.war
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+coverage/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+logs/
+
+# Sistema Operacional
+Thumbs.db
+.DS_Store
+
+# Segurança e Variáveis de Ambiente
+.env
+.env.*
+*.local
+secrets/
+
+# Docker e Infraestrutura
+infra/data/
