@@ -1,4 +1,4 @@
-package com.ingressosapp.catalogo_service;
+package com.ingressosapp.catalogoservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

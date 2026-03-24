@@ -1,3 +1,27 @@
 spring:
   application:
     name: catalogo-service
+
+  # Configuração de Conexão com o MongoDB (via Docker)
+  data:
+    mongodb:
+      uri: mongodb://admin:admin@localhost:27017/ingressos_db?authSource=admin
+      auto-index-creation: true
+
+    # Configuração de Conexão com o Redis (via Docker)
+    redis:
+      host: localhost
+      port: 6379
+
+server:
+  port: 8082
+
+# Configurações para expor os Healthchecks (Monitoramento do Docker/Kubernetes)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
