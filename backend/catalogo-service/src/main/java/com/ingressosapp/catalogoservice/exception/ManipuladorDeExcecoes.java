@@ -31,6 +31,19 @@ public class ManipuladorDeExcecoes {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
     }
 
+    @ExceptionHandler(RegraNegocioException.class)
+    public ResponseEntity<ErroPadrao> capturarRegrasDeNegocio(RegraNegocioException ex, HttpServletRequest request) {
+        ErroPadrao erro = new ErroPadrao(
+                LocalDateTime.now(),
+                HttpStatus.UNPROCESSABLE_CONTENT.value(),
+                "Unprocessable Content",
+                ex.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(erro);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErroPadrao> capturarErrosDeValidacao(MethodArgumentNotValidException ex, HttpServletRequest request) {
         Map<String, String> validacoes = new HashMap<>();
