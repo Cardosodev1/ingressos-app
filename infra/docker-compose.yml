@@ -1,7 +1,20 @@
+networks:
+  ingressos-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  mongo_data:
+  mongo_config:
+  redis_data:
+  kafka_data:
+  kafka_secrets:
+  keycloak_data:
+
 services:
   # 1. Banco Relacional (Transações, Reservas)
   mysql:
-    image: mysql:8.0
+    image: mysql:8.4
     container_name: ingressos_mysql
     restart: unless-stopped
     ports:
@@ -21,7 +34,7 @@ services:
 
   # 2. Banco NoSQL (Catálogo de Eventos)
   mongodb:
-    image: mongo:6.0
+    image: mongo:8.0
     container_name: ingressos_mongo
     restart: unless-stopped
     ports:
@@ -40,9 +53,9 @@ services:
       timeout: 5s
       retries: 5
 
-  # 3. Cache e Distributed Lock
+  # 3. Cache em Memória (Rate Limiting, Locks e Sessões)
   redis:
-    image: redis:7.0-alpine
+    image: redis:7.2-alpine
     container_name: ingressos_redis
     restart: unless-stopped
     ports:
@@ -57,9 +70,9 @@ services:
       timeout: 5s
       retries: 5
 
-  # 4. Mensageria Assíncrona (Confluent Kafka - Oficial)
+  # 4. Mensageria Assíncrona (Confluent KRaft)
   kafka:
-    image: confluentinc/cp-kafka:7.5.0
+    image: confluentinc/cp-kafka:7.8.0
     container_name: ingressos_kafka
     restart: unless-stopped
     ports:
@@ -89,9 +102,9 @@ services:
       timeout: 5s
       retries: 5
 
-  # 5. Gestão de Identidade e Acesso (IAM)
+  # 5. Gestão de Identidade e Acesso (Keycloak IAM / JWT)
   keycloak:
-    image: quay.io/keycloak/keycloak:23.0
+    image: quay.io/keycloak/keycloak:26.0
     container_name: ingressos_keycloak
     command: start-dev
     restart: unless-stopped
@@ -105,17 +118,12 @@ services:
     networks:
       - ingressos-network
 
-# Configuração da rede interna
-networks:
-  ingressos-network:
-    driver: bridge
-
-# Declaração dos Named Volumes
-volumes:
-  mysql_data:
-  mongo_data:
-  mongo_config:
-  redis_data:
-  kafka_data:
-  kafka_secrets:
-  keycloak_data:
+  # 6. Observabilidade e Rastreamento Distribuído (Zipkin)
+  zipkin:
+    image: openzipkin/zipkin:3.4
+    container_name: ingressos_zipkin
+    restart: unless-stopped
+    ports:
+      - "9411:9411"
+    networks:
+      - ingressos-network
