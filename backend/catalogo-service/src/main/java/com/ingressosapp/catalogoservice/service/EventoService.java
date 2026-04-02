@@ -6,9 +6,9 @@ import com.ingressosapp.catalogoservice.dto.request.EventoRequestDTO;
 import com.ingressosapp.catalogoservice.dto.response.EventoDetalheDTO;
 import com.ingressosapp.catalogoservice.dto.response.EventoResumoDTO;
 import com.ingressosapp.catalogoservice.exception.RecursoNaoEncontradoException;
-import com.ingressosapp.catalogoservice.exception.RegraNegocioException;
 import com.ingressosapp.catalogoservice.mapper.EventoMapper;
 import com.ingressosapp.catalogoservice.repository.EventoRepository;
+import com.ingressosapp.catalogoservice.validation.ValidacaoCriacaoEvento;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -26,6 +27,7 @@ public class EventoService {
 
     private final EventoRepository repository;
     private final EventoMapper mapper;
+    private final List<ValidacaoCriacaoEvento> validacoes;
 
     public Page<EventoResumoDTO> listarEventos(Categoria categoria, Pageable pageable) {
         Page<Evento> eventosPage;
@@ -45,11 +47,9 @@ public class EventoService {
 
     @CacheEvict(value = "eventos", allEntries = true)
     public EventoDetalheDTO criar(EventoRequestDTO dto) {
-        Evento evento = mapper.toEntity(dto);
+        validacoes.forEach(v -> v.validar(dto));
 
-        if (evento.getDataHoraFim().isBefore(evento.getDataHora())) {
-            throw new RegraNegocioException("A data de fim do evento não pode ser anterior à data de início.");
-        }
+        Evento evento = mapper.toEntity(dto);
 
         evento.setAtivo(true);
         evento.setDataCriacao(LocalDateTime.now());
