@@ -11,10 +11,14 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Setor {
+public class Lote {
     private String id;
     private String nome;
-    private Integer capacidadeTotal;
-    private Integer ingressosDisponiveis;
-    private List<Lote> lotes;
+    private Integer capacidade;
+
+    @Builder.Default
+    private Integer ingressosVendidos = 0;
+
+    private Boolean ativo;
+    private List<Preco> precos;
 }

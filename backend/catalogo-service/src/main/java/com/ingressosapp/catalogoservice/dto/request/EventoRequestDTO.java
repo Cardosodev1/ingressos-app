@@ -13,22 +13,45 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record EventoRequestDTO(
-        @NotBlank(message = "O título é obrigatório") String titulo,
-        @NotBlank(message = "A descrição é obrigatória") String descricao,
-        @NotBlank(message = "A URL da imagem é obrigatória") String imagemUrl,
+        @NotBlank(message = "O título é obrigatório")
+        String titulo,
 
-        @NotNull(message = "A categoria é obrigatória") Categoria categoria,
-        @NotNull(message = "O status inicial é obrigatório") StatusEvento status,
+        @NotBlank(message = "A descrição é obrigatória")
+        String descricao,
 
-        @NotNull @Future(message = "A data do evento deve ser no futuro") LocalDateTime dataHora,
-        @NotNull @Future(message = "O fim do evento deve ser no futuro") LocalDateTime dataHoraFim,
-        @NotNull @FutureOrPresent(message = "A abertura de vendas não pode estar no passado") LocalDateTime dataAberturaVendas,
+        @NotBlank(message = "A URL da imagem é obrigatória")
+        String imagemUrl,
 
-        @NotNull @Valid EnderecoDTO local,
+        @NotNull(message = "A categoria é obrigatória")
+        Categoria categoria,
 
-        @NotBlank(message = "A produtora é obrigatória") String produtora,
-        @NotNull @Min(value = 0, message = "A classificação não pode ser negativa") Integer classificacaoEtaria,
+        @NotNull(message = "O status inicial é obrigatório")
+        StatusEvento status,
+
+        @NotNull
+        @Future(message = "A data do evento deve ser no futuro")
+        LocalDateTime dataHora,
+
+        @NotNull
+        @Future(message = "O fim do evento deve ser no futuro")
+        LocalDateTime dataHoraFim,
+
+        @NotNull
+        @FutureOrPresent(message = "A abertura de vendas não pode estar no passado")
+        LocalDateTime dataAberturaVendas,
+
+        @NotNull(message = "O endereço é obrigatório")
+        @Valid
+        EnderecoDTO local,
+
+        @NotBlank(message = "A produtora é obrigatória")
+        String produtora,
+
+        @NotNull
+        @Min(value = 0, message = "A classificação não pode ser negativa")
+        Integer classificacaoEtaria,
 
         @NotEmpty(message = "O evento deve ter pelo menos um setor")
-        @Valid List<SetorRequestDTO> setores
+        @Valid
+        List<SetorRequestDTO> setores
 ) {}

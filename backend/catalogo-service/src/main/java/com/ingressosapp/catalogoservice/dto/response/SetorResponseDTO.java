@@ -1,6 +1,5 @@
 package com.ingressosapp.catalogoservice.dto.response;
 
-import com.ingressosapp.catalogoservice.dto.request.PrecoRequestDTO;
 import java.util.List;
 
 public record SetorResponseDTO(
@@ -8,5 +7,5 @@ public record SetorResponseDTO(
         String nome,
         Integer capacidadeTotal,
         Integer ingressosDisponiveis,
-        List<PrecoRequestDTO> precos
+        List<LoteResponseDTO> lotes
 ) {}

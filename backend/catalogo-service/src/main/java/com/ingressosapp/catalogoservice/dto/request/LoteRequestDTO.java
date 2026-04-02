@@ -7,15 +7,15 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 
-public record SetorRequestDTO(
-        @NotBlank(message = "O nome do setor é obrigatório")
+public record LoteRequestDTO(
+        @NotBlank(message = "O nome do lote é obrigatório")
         String nome,
 
-        @NotNull(message = "A capacidade total é obrigatória")
+        @NotNull(message = "A capacidade do lote é obrigatória")
         @Positive(message = "A capacidade deve ser maior que zero")
-        Integer capacidadeTotal,
+        Integer capacidade,
 
-        @NotEmpty(message = "O setor deve ter pelo menos um lote configurado")
+        @NotEmpty(message = "O lote deve ter pelo menos um preço configurado")
         @Valid
-        List<LoteRequestDTO> lotes
+        List<PrecoRequestDTO> precos
 ) {}

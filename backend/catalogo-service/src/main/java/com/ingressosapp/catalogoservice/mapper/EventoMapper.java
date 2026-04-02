@@ -1,21 +1,17 @@
 package com.ingressosapp.catalogoservice.mapper;
 
-import com.ingressosapp.catalogoservice.domain.Endereco;
-import com.ingressosapp.catalogoservice.domain.Evento;
-import com.ingressosapp.catalogoservice.domain.Preco;
-import com.ingressosapp.catalogoservice.domain.Setor;
-import com.ingressosapp.catalogoservice.dto.request.EnderecoDTO;
-import com.ingressosapp.catalogoservice.dto.request.EventoRequestDTO;
-import com.ingressosapp.catalogoservice.dto.request.PrecoRequestDTO;
-import com.ingressosapp.catalogoservice.dto.request.SetorRequestDTO;
+import com.ingressosapp.catalogoservice.domain.*;
+import com.ingressosapp.catalogoservice.dto.request.*;
 import com.ingressosapp.catalogoservice.dto.response.EventoDetalheDTO;
 import com.ingressosapp.catalogoservice.dto.response.EventoResumoDTO;
+import com.ingressosapp.catalogoservice.dto.response.LoteResponseDTO;
 import com.ingressosapp.catalogoservice.dto.response.SetorResponseDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Component
 public class EventoMapper {
@@ -40,7 +36,7 @@ public class EventoMapper {
                 .setores(dto.setores() != null ?
                         dto.setores().stream()
                                 .map(this::toSetorEntity)
-                                .collect(Collectors.toCollection(ArrayList::new)) :
+                                .collect(Collectors.toList()) :
                         new ArrayList<>())
                 .build();
     }
@@ -65,10 +61,27 @@ public class EventoMapper {
                 .nome(dto.nome())
                 .capacidadeTotal(dto.capacidadeTotal())
                 .ingressosDisponiveis(dto.capacidadeTotal())
+                .lotes(dto.lotes() != null ?
+                        IntStream.range(0, dto.lotes().size())
+                                .mapToObj(i -> toLoteEntity(dto.lotes().get(i), i == 0))
+                                .collect(Collectors.toList()) :
+                        new ArrayList<>())
+                .build();
+    }
+
+    private Lote toLoteEntity(LoteRequestDTO dto, boolean ativo) {
+        if (dto == null) return null;
+
+        return Lote.builder()
+                .id(UUID.randomUUID().toString())
+                .nome(dto.nome())
+                .capacidade(dto.capacidade())
+                .ingressosVendidos(0)
+                .ativo(ativo)
                 .precos(dto.precos() != null ?
                         dto.precos().stream()
                                 .map(this::toPrecoEntity)
-                                .collect(Collectors.toCollection(ArrayList::new)) :
+                                .collect(Collectors.toList()) :
                         new ArrayList<>())
                 .build();
     }
@@ -125,7 +138,7 @@ public class EventoMapper {
                 evento.getSetores() != null ?
                         evento.getSetores().stream()
                                 .map(this::toSetorResponseDTO)
-                                .collect(Collectors.toCollection(ArrayList::new)) :
+                                .collect(Collectors.toList()) :
                         new ArrayList<>()
         );
     }
@@ -150,10 +163,27 @@ public class EventoMapper {
                 setor.getNome(),
                 setor.getCapacidadeTotal(),
                 setor.getIngressosDisponiveis(),
-                setor.getPrecos() != null ?
-                        setor.getPrecos().stream()
+                setor.getLotes() != null ?
+                        setor.getLotes().stream()
+                                .map(this::toLoteResponseDTO)
+                                .collect(Collectors.toList()) :
+                        new ArrayList<>()
+        );
+    }
+
+    private LoteResponseDTO toLoteResponseDTO(Lote lote) {
+        if (lote == null) return null;
+
+        return new LoteResponseDTO(
+                lote.getId(),
+                lote.getNome(),
+                lote.getCapacidade(),
+                lote.getIngressosVendidos(),
+                lote.getAtivo(),
+                lote.getPrecos() != null ?
+                        lote.getPrecos().stream()
                                 .map(p -> new PrecoRequestDTO(p.getTipoIngresso(), p.getValor()))
-                                .collect(Collectors.toCollection(ArrayList::new)) :
+                                .collect(Collectors.toList()) :
                         new ArrayList<>()
         );
     }
