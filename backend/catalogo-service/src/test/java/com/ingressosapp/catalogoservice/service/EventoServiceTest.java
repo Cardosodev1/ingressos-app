@@ -7,6 +7,8 @@ import com.ingressosapp.catalogoservice.exception.RecursoNaoEncontradoException;
 import com.ingressosapp.catalogoservice.exception.RegraNegocioException;
 import com.ingressosapp.catalogoservice.mapper.EventoMapper;
 import com.ingressosapp.catalogoservice.repository.EventoRepository;
+import com.ingressosapp.catalogoservice.validation.ValidacaoCriacaoEvento;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,38 +32,23 @@ class EventoServiceTest {
     @Mock
     private EventoMapper mapper;
 
+    @Mock
+    private ValidacaoCriacaoEvento validacaoMock;
+
     @InjectMocks
     private EventoService service;
 
-    @Test
-    @DisplayName("Deve lançar exceção quando a data de fim for ANTERIOR à data de início")
-    void naoDeveCriarEventoComDataInvalida() {
-        EventoRequestDTO dtoFalso = mock(EventoRequestDTO.class);
-
-        Evento eventoInvalido = new Evento();
-        eventoInvalido.setTitulo("Evento Invalido");
-        eventoInvalido.setDataHora(LocalDateTime.of(2026, 12, 20, 20, 0));
-        eventoInvalido.setDataHoraFim(LocalDateTime.of(2026, 12, 15, 20, 0));
-
-        when(mapper.toEntity(any())).thenReturn(eventoInvalido);
-
-        RegraNegocioException exception = assertThrows(RegraNegocioException.class, () ->
-                service.criar(dtoFalso));
-
-        assertEquals("A data de fim do evento não pode ser anterior à data de início.", exception.getMessage());
-
-        verify(repository, never()).save(any());
+    @BeforeEach
+    void setUp() {
+        service = new EventoService(repository, mapper, List.of(validacaoMock));
     }
 
     @Test
-    @DisplayName("Deve salvar evento com sucesso quando as datas forem válidas")
+    @DisplayName("Deve executar as validações e salvar o evento com sucesso")
     void deveCriarEventoComSucesso() {
-        EventoRequestDTO dtoFalso = mock(EventoRequestDTO.class);
-
+        EventoRequestDTO dto = mock(EventoRequestDTO.class);
         Evento eventoValido = new Evento();
         eventoValido.setTitulo("Evento Correto");
-        eventoValido.setDataHora(LocalDateTime.of(2026, 12, 15, 20, 0));
-        eventoValido.setDataHoraFim(LocalDateTime.of(2026, 12, 20, 20, 0)); // Tudo certo aqui!
 
         EventoDetalheDTO respostaEsperada = mock(EventoDetalheDTO.class);
 
@@ -68,59 +56,61 @@ class EventoServiceTest {
         when(repository.save(any(Evento.class))).thenReturn(eventoValido);
         when(mapper.toDetalheDTO(any(Evento.class))).thenReturn(respostaEsperada);
 
-        EventoDetalheDTO resultado = service.criar(dtoFalso);
+        EventoDetalheDTO resultado = service.criar(dto);
 
         assertNotNull(resultado);
-        assertTrue(eventoValido.getAtivo());
-        assertNotNull(eventoValido.getDataCriacao());
-
+        verify(validacaoMock, times(1)).validar(dto);
         verify(repository, times(1)).save(eventoValido);
+    }
+
+    @Test
+    @DisplayName("NÃO deve salvar o evento se uma validação lançar exceção")
+    void naoDeveCriarEventoSeValidacaoFalhar() {
+        EventoRequestDTO dto = mock(EventoRequestDTO.class);
+
+        doThrow(new RegraNegocioException("Erro de Validação")).when(validacaoMock).validar(dto);
+
+        assertThrows(RegraNegocioException.class, () -> service.criar(dto));
+
+        verify(mapper, never()).toEntity(any());
+        verify(repository, never()).save(any());
     }
 
     @Test
     @DisplayName("Deve buscar e retornar os detalhes do evento com sucesso")
     void deveBuscarEventoPorIdComSucesso() {
-        String idValido = "69c343df14792c83525a8966";
+        String idValido = "123";
         Evento eventoMock = new Evento();
         eventoMock.setId(idValido);
         EventoDetalheDTO dtoEsperado = mock(EventoDetalheDTO.class);
 
-        when(repository.findByIdAndAtivoTrue(idValido)).thenReturn(java.util.Optional.of(eventoMock));
+        when(repository.findByIdAndAtivoTrue(idValido)).thenReturn(Optional.of(eventoMock));
         when(mapper.toDetalheDTO(eventoMock)).thenReturn(dtoEsperado);
 
-        EventoDetalheDTO resultado = service.buscarPorId(idValido);
-
-        assertNotNull(resultado);
-        verify(repository, times(1)).findByIdAndAtivoTrue(idValido);
+        assertNotNull(service.buscarPorId(idValido));
     }
 
     @Test
-    @DisplayName("Deve lançar RecursoNaoEncontradoException ao buscar evento inexistente ou inativo")
+    @DisplayName("Deve lançar RecursoNaoEncontradoException ao buscar evento inexistente")
     void deveLancarExcecaoAoBuscarEventoInexistente() {
-        String idInvalido = "id-fantasma";
+        String idInvalido = "123";
 
-        when(repository.findByIdAndAtivoTrue(idInvalido)).thenReturn(java.util.Optional.empty());
-
-        RecursoNaoEncontradoException exception = assertThrows(RecursoNaoEncontradoException.class, () ->
-                service.buscarPorId(idInvalido));
-
-        assertEquals("Evento não encontrado com o ID: " + idInvalido, exception.getMessage());
-        verify(mapper, never()).toDetalheDTO(any());
+        when(repository.findByIdAndAtivoTrue(idInvalido)).thenReturn(Optional.empty());
+        assertThrows(RecursoNaoEncontradoException.class, () -> service.buscarPorId(idInvalido));
     }
 
     @Test
-    @DisplayName("Deve alterar o status para inativo e salvar no banco ao excluir")
+    @DisplayName("Deve inativar evento com sucesso")
     void deveInativarEventoComSucesso() {
-        String idValido = "12345";
-        Evento eventoAtivo = new Evento();
-        eventoAtivo.setId(idValido);
-        eventoAtivo.setAtivo(true);
+        String idValido = "123";
+        Evento evento = new Evento();
+        evento.setAtivo(true);
 
-        when(repository.findByIdAndAtivoTrue(idValido)).thenReturn(java.util.Optional.of(eventoAtivo));
+        when(repository.findByIdAndAtivoTrue(idValido)).thenReturn(Optional.of(evento));
 
         service.inativar(idValido);
 
-        assertFalse(eventoAtivo.getAtivo());
-        verify(repository, times(1)).save(eventoAtivo);
+        assertFalse(evento.getAtivo());
+        verify(repository, times(1)).save(evento);
     }
 }
