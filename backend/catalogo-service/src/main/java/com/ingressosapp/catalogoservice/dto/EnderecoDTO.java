@@ -1,4 +1,4 @@
-package com.ingressosapp.catalogoservice.dto.request;
+package com.ingressosapp.catalogoservice.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

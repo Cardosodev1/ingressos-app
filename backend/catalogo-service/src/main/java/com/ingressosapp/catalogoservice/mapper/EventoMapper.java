@@ -1,6 +1,8 @@
 package com.ingressosapp.catalogoservice.mapper;
 
 import com.ingressosapp.catalogoservice.domain.*;
+import com.ingressosapp.catalogoservice.dto.EnderecoDTO;
+import com.ingressosapp.catalogoservice.dto.PrecoDTO;
 import com.ingressosapp.catalogoservice.dto.request.*;
 import com.ingressosapp.catalogoservice.dto.response.EventoDetalheDTO;
 import com.ingressosapp.catalogoservice.dto.response.EventoResumoDTO;
@@ -86,7 +88,7 @@ public class EventoMapper {
                 .build();
     }
 
-    private Preco toPrecoEntity(PrecoRequestDTO dto) {
+    private Preco toPrecoEntity(PrecoDTO dto) {
         if (dto == null) return null;
 
         return Preco.builder()
@@ -182,7 +184,7 @@ public class EventoMapper {
                 lote.getAtivo(),
                 lote.getPrecos() != null ?
                         lote.getPrecos().stream()
-                                .map(p -> new PrecoRequestDTO(p.getTipoIngresso(), p.getValor()))
+                                .map(p -> new PrecoDTO(p.getTipoIngresso(), p.getValor()))
                                 .collect(Collectors.toList()) :
                         new ArrayList<>()
         );

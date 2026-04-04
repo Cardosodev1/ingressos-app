@@ -53,4 +53,9 @@ public class Evento {
 
     @Version
     private Long versao;
+
+    public void criar() {
+        this.ativo = true;
+        this.dataCriacao = LocalDateTime.now();
+    }
 }

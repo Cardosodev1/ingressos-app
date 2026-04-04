@@ -17,7 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -41,22 +40,16 @@ public class EventoService {
 
     @Cacheable(value = "eventos", key = "#id")
     public EventoDetalheDTO buscarPorId(String id) {
-        Evento evento = buscarEntidadePorId(id);
-        return mapper.toDetalheDTO(evento);
+        return mapper.toDetalheDTO(buscarEntidadePorId(id));
     }
 
     @CacheEvict(value = "eventos", allEntries = true)
     public EventoDetalheDTO criar(EventoRequestDTO dto) {
         validacoes.forEach(v -> v.validar(dto));
-
         Evento evento = mapper.toEntity(dto);
-
-        evento.setAtivo(true);
-        evento.setDataCriacao(LocalDateTime.now());
+        evento.criar();
         log.info("Criando novo evento com título: {}", evento.getTitulo());
-
-        Evento eventoSalvo = repository.save(evento);
-        return mapper.toDetalheDTO(eventoSalvo);
+        return mapper.toDetalheDTO(repository.save(evento));
     }
 
     @CacheEvict(value = "eventos", key = "#id")

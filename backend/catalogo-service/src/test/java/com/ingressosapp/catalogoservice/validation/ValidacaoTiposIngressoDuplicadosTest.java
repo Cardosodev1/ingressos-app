@@ -3,7 +3,7 @@ package com.ingressosapp.catalogoservice.validation;
 import com.ingressosapp.catalogoservice.domain.enums.TipoIngresso;
 import com.ingressosapp.catalogoservice.dto.request.EventoRequestDTO;
 import com.ingressosapp.catalogoservice.dto.request.LoteRequestDTO;
-import com.ingressosapp.catalogoservice.dto.request.PrecoRequestDTO;
+import com.ingressosapp.catalogoservice.dto.PrecoDTO;
 import com.ingressosapp.catalogoservice.dto.request.SetorRequestDTO;
 import com.ingressosapp.catalogoservice.exception.RegraNegocioException;
 import org.junit.jupiter.api.DisplayName;
@@ -23,10 +23,10 @@ class ValidacaoTiposIngressoDuplicadosTest {
     @Test
     @DisplayName("Deve passar quando não houver tipos de ingressos duplicados no lote")
     void devePassarSemDuplicatas() {
-        PrecoRequestDTO precoMeia = mock(PrecoRequestDTO.class);
+        PrecoDTO precoMeia = mock(PrecoDTO.class);
         when(precoMeia.tipoIngresso()).thenReturn(TipoIngresso.MEIA_ESTUDANTE);
 
-        PrecoRequestDTO precoInteira = mock(PrecoRequestDTO.class);
+        PrecoDTO precoInteira = mock(PrecoDTO.class);
         when(precoInteira.tipoIngresso()).thenReturn(TipoIngresso.INTEIRA);
 
         LoteRequestDTO lote = mock(LoteRequestDTO.class);
@@ -44,10 +44,10 @@ class ValidacaoTiposIngressoDuplicadosTest {
     @Test
     @DisplayName("Deve falhar quando houver tipos de ingressos duplicados no lote")
     void deveFalharComDuplicatas() {
-        PrecoRequestDTO precoInteira1 = mock(PrecoRequestDTO.class);
+        PrecoDTO precoInteira1 = mock(PrecoDTO.class);
         when(precoInteira1.tipoIngresso()).thenReturn(TipoIngresso.INTEIRA);
 
-        PrecoRequestDTO precoInteira2 = mock(PrecoRequestDTO.class);
+        PrecoDTO precoInteira2 = mock(PrecoDTO.class);
         when(precoInteira2.tipoIngresso()).thenReturn(TipoIngresso.INTEIRA);
 
         LoteRequestDTO lote = mock(LoteRequestDTO.class);

@@ -1,5 +1,6 @@
 package com.ingressosapp.catalogoservice.dto.request;
 
+import com.ingressosapp.catalogoservice.dto.PrecoDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -17,5 +18,5 @@ public record LoteRequestDTO(
 
         @NotEmpty(message = "O lote deve ter pelo menos um preço configurado")
         @Valid
-        List<PrecoRequestDTO> precos
+        List<PrecoDTO> precos
 ) {}

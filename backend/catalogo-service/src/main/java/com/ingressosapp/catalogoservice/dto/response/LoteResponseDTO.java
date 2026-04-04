@@ -1,6 +1,6 @@
 package com.ingressosapp.catalogoservice.dto.response;
 
-import com.ingressosapp.catalogoservice.dto.request.PrecoRequestDTO;
+import com.ingressosapp.catalogoservice.dto.PrecoDTO;
 
 import java.util.List;
 
@@ -10,6 +10,6 @@ public record LoteResponseDTO(
         Integer capacidade,
         Integer ingressosVendidos,
         Boolean ativo,
-        List<PrecoRequestDTO> precos
+        List<PrecoDTO> precos
 ) {
 }

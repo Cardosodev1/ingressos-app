@@ -13,16 +13,16 @@ public class ValidacaoCapacidadeSetor implements ValidacaoCriacaoEvento {
     public void validar(EventoRequestDTO dto) {
         if (dto.setores() == null) return;
 
-        for (SetorRequestDTO setor : dto.setores()) {
-            if (setor.lotes() != null) {
-                int somaLotes = setor.lotes().stream()
+        for (SetorRequestDTO setorRQ : dto.setores()) {
+            if (setorRQ.lotes() != null) {
+                int somaLotes = setorRQ.lotes().stream()
                         .mapToInt(LoteRequestDTO::capacidade)
                         .sum();
 
-                if (somaLotes > setor.capacidadeTotal()) {
+                if (somaLotes > setorRQ.capacidadeTotal()) {
                     throw new RegraNegocioException(String.format(
                             "A soma da capacidade dos lotes (%d) não pode exceder a capacidade total do setor (%d).",
-                            somaLotes, setor.capacidadeTotal()));
+                            somaLotes, setorRQ.capacidadeTotal()));
                 }
             }
         }

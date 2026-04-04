@@ -2,7 +2,7 @@ package com.ingressosapp.catalogoservice.dto.response;
 
 import com.ingressosapp.catalogoservice.domain.enums.Categoria;
 import com.ingressosapp.catalogoservice.domain.enums.StatusEvento;
-import com.ingressosapp.catalogoservice.dto.request.EnderecoDTO;
+import com.ingressosapp.catalogoservice.dto.EnderecoDTO;
 import java.time.LocalDateTime;
 import java.util.List;
 

@@ -1,11 +1,11 @@
-package com.ingressosapp.catalogoservice.dto.request;
+package com.ingressosapp.catalogoservice.dto;
 
 import com.ingressosapp.catalogoservice.domain.enums.TipoIngresso;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 
-public record PrecoRequestDTO(
+public record PrecoDTO(
         @NotNull(message = "O tipo de ingresso é obrigatório")
         TipoIngresso tipoIngresso,
 
