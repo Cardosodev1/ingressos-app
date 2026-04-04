@@ -14,4 +14,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, String> {
     List<Reserva> findByUsuarioIdOrderByDataReservaDesc(String usuarioId);
 
     List<Reserva> findByStatusAndDataExpiracaoBefore(StatusReserva status, LocalDateTime agora);
+
+    boolean existsByUsuarioIdAndStatus(String usuarioId, StatusReserva status);
 }

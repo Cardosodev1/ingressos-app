@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "reserva")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Entity
+@Table(name = "reserva")
 public class Reserva {
 
     @Id
@@ -49,7 +49,7 @@ public class Reserva {
     private LocalDateTime dataAtualizacao;
 
     @Version
-    private Integer versao;
+    private Long versao;
 
     @Builder.Default
     @OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -58,5 +58,11 @@ public class Reserva {
     public void adicionarItem(ItemReserva item) {
         itens.add(item);
         item.setReserva(this);
+    }
+
+    public void calcularTotal() {
+        this.valorTotal = this.itens.stream()
+                .map(ItemReserva::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

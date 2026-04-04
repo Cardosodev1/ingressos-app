@@ -1,0 +1,1 @@
+ALTER TABLE reserva MODIFY versao BIGINT DEFAULT 0;

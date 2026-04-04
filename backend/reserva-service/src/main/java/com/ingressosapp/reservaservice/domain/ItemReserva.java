@@ -5,13 +5,13 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "item_reserva")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Entity
+@Table(name = "item_reserva")
 public class ItemReserva {
 
     @Id
@@ -39,4 +39,9 @@ public class ItemReserva {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reserva_id", nullable = false)
     private Reserva reserva;
+
+    public BigDecimal getSubtotal() {
+        if (precoUnitario == null || quantidade == null) return BigDecimal.ZERO;
+        return precoUnitario.multiply(BigDecimal.valueOf(quantidade));
+    }
 }
