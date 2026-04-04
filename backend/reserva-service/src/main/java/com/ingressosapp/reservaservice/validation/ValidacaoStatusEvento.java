@@ -2,6 +2,7 @@ package com.ingressosapp.reservaservice.validation;
 
 import com.ingressosapp.reservaservice.client.dto.EventoDetalheDTO;
 import com.ingressosapp.reservaservice.dto.request.ReservaRequestDTO;
+import com.ingressosapp.reservaservice.exception.RegraNegocioException;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -16,11 +17,11 @@ public class ValidacaoStatusEvento implements ValidacaoCriacaoReserva {
                 EventoDetalheDTO eventoDTO = eventosNoCatalogo.get(item.eventoId());
 
                 if (eventoDTO.ativo() == null || !eventoDTO.ativo()) {
-                    throw new RuntimeException("O evento '" + eventoDTO.titulo() + "' está inativo.");
+                    throw new RegraNegocioException("O evento '" + eventoDTO.titulo() + "' está inativo.");
                 }
 
                 if (!"VENDAS_ABERTAS".equals(eventoDTO.status())) {
-                    throw new RuntimeException("O evento '" + eventoDTO.titulo() + "' não está disponível para vendas.");
+                    throw new RegraNegocioException("O evento '" + eventoDTO.titulo() + "' não está disponível para vendas.");
                 }
             });
         }

@@ -8,6 +8,8 @@ import com.ingressosapp.reservaservice.domain.Reserva;
 import com.ingressosapp.reservaservice.dto.request.ItemReservaRequestDTO;
 import com.ingressosapp.reservaservice.dto.request.ReservaRequestDTO;
 import com.ingressosapp.reservaservice.dto.response.ReservaResponseDTO;
+import com.ingressosapp.reservaservice.exception.RecursoNaoEncontradoException;
+import com.ingressosapp.reservaservice.exception.RegraNegocioException;
 import com.ingressosapp.reservaservice.mapper.ReservaMapper;
 import com.ingressosapp.reservaservice.repository.ReservaRepository;
 import com.ingressosapp.reservaservice.validation.ValidacaoCriacaoReserva;
@@ -70,10 +72,10 @@ public class ReservaService {
         try {
             log.info("Buscando dados do evento {} no catalogo-service", eventoId);
             return catalogoClient.buscarEventoPorId(eventoId);
-        } catch (NotFound e) {
-            throw new RuntimeException("Evento não encontrado no catálogo: " + eventoId);
-        } catch (FeignException e) {
-            throw new RuntimeException("O serviço de catálogo está temporariamente indisponível.");
+        } catch (NotFound ex) {
+            throw new RecursoNaoEncontradoException("Evento não encontrado no catálogo: " + eventoId);
+        } catch (FeignException ex) {
+            throw new RegraNegocioException("O serviço de catálogo está temporariamente indisponível.");
         }
     }
 
@@ -103,7 +105,7 @@ public class ReservaService {
                 .filter(p -> p.tipoIngresso().equalsIgnoreCase(itemReservaRQ.tipoIngresso()))
                 .findFirst()
                 .map(PrecoDTO::valor)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new RegraNegocioException(
                         String.format("Preço não encontrado para o tipo de ingresso '%s' no lote '%s'",
                                 itemReservaRQ.tipoIngresso(), itemReservaRQ.loteId())
                 ));

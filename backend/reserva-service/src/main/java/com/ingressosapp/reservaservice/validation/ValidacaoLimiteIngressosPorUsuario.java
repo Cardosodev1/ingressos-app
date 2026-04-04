@@ -3,6 +3,7 @@ package com.ingressosapp.reservaservice.validation;
 import com.ingressosapp.reservaservice.client.dto.EventoDetalheDTO;
 import com.ingressosapp.reservaservice.dto.request.ItemReservaRequestDTO;
 import com.ingressosapp.reservaservice.dto.request.ReservaRequestDTO;
+import com.ingressosapp.reservaservice.exception.RegraNegocioException;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -27,7 +28,7 @@ public class ValidacaoLimiteIngressosPorUsuario implements ValidacaoCriacaoReser
         ingressosPorEvento.forEach((eventoId, totalIngressos) -> {
             if (totalIngressos > LIMITE_MAXIMO_POR_EVENTO) {
                 EventoDetalheDTO evento = eventosNoCatalogo.get(eventoId);
-                throw new RuntimeException(String.format(
+                throw new RegraNegocioException(String.format(
                         "Você só pode comprar no máximo %d ingressos para o evento '%s'.",
                         LIMITE_MAXIMO_POR_EVENTO, evento.titulo()
                 ));

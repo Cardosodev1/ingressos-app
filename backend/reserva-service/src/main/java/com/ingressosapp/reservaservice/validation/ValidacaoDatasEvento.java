@@ -2,6 +2,7 @@ package com.ingressosapp.reservaservice.validation;
 
 import com.ingressosapp.reservaservice.client.dto.EventoDetalheDTO;
 import com.ingressosapp.reservaservice.dto.request.ReservaRequestDTO;
+import com.ingressosapp.reservaservice.exception.RegraNegocioException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -17,11 +18,11 @@ public class ValidacaoDatasEvento implements ValidacaoCriacaoReserva {
                 EventoDetalheDTO eventoDTO = eventosNoCatalogo.get(item.eventoId());
 
                 if (eventoDTO.dataAberturaVendas() != null && LocalDateTime.now().isBefore(eventoDTO.dataAberturaVendas())) {
-                    throw new RuntimeException("As vendas para o evento '" + eventoDTO.titulo() + "' ainda não começaram.");
+                    throw new RegraNegocioException("As vendas para o evento '" + eventoDTO.titulo() + "' ainda não começaram.");
                 }
 
                 if (eventoDTO.dataHora() != null && LocalDateTime.now().isAfter(eventoDTO.dataHora())) {
-                    throw new RuntimeException("O evento '" + eventoDTO.titulo() + "' já aconteceu ou foi encerrado.");
+                    throw new RegraNegocioException("O evento '" + eventoDTO.titulo() + "' já aconteceu ou foi encerrado.");
                 }
             });
         }
